@@ -10,7 +10,21 @@ services:
       - project.env
     depends_on:
       - database
+      - redis
   
+  grader:
+    build: grader
+    restart: unless-stopped
+    volumes:
+      - ./grader:/app
+    ports:
+      - 8001:8000
+    env_file:
+      - project.env
+    depends_on:
+      - database
+      - redis
+
   database-migrations:
     image: flyway/flyway:11.10
     env_file:
@@ -31,3 +45,9 @@ services:
       postgres
       -c shared_preload_libraries=auto_explain,pg_stat_statements
       -c auto_explain.log_min_duration=10
+  
+  redis:
+    image: redis:7.4.2
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
