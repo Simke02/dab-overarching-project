@@ -1,21 +1,8 @@
 ---
+import Exercise from "../../components/Exercise.svelte";
 const { id } = Astro.params;
 ---
-
 <p>{`Exercise ${id}`}</p>
-
-<!-- SSR HTML (grader sees this immediately) -->
 <textarea id="text"></textarea>
 <button id="submit">Submit</button>
-
-<p id="characters"></p>
-<p id="ifs"></p>
-
-<!-- Svelte enhances behavior -->
-<script type="module">
-  import Exercise from "../../components/Exercise.svelte";
-
-  new Exercise({
-    target: document.body,
-  });
-</script>
+<Exercise client:load />

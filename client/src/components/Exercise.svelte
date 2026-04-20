@@ -1,22 +1,24 @@
 <script>
   import { onMount } from "svelte";
 
-  onMount(() => {
-    const textarea = document.getElementById("text");
-    const button = document.getElementById("submit");
-    const charEl = document.getElementById("characters");
-    const ifEl = document.getElementById("ifs");
+  let characters = null;
+  let ifs = null;
 
-    if (!textarea || !button) return;
+  onMount(() => {
+    const button = document.getElementById("submit");
+    const textarea = document.getElementById("text");
 
     button.addEventListener("click", () => {
       const text = textarea.value;
-
-      const characters = text.length;
-      const ifs = (text.match(/if/g) || []).length;
-
-      charEl.textContent = `Characters: ${characters}`;
-      ifEl.textContent = `ifs: ${ifs}`;
+      characters = text.length;
+      ifs = (text.match(/if/g) || []).length;
     });
   });
 </script>
+
+{#if characters !== null}
+  <p>Characters: {characters}</p>
+{/if}
+{#if ifs !== null}
+  <p>ifs: {ifs}</p>
+{/if}
