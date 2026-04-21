@@ -1,8 +1,9 @@
 ---
 import Exercise from "../../components/Exercise.svelte";
-const { id } = Astro.params;
+export const prerender = false;
+const { id } = Astro.params as { id: string };
 ---
-<p>{`Exercise ${id}`}</p>
+<p>Exercise {id}</p>
 <textarea id="text"></textarea>
 <button id="submit">Submit</button>
 <Exercise client:load />

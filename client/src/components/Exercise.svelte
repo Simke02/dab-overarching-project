@@ -1,18 +1,22 @@
 <script>
-  import { onMount } from "svelte";
+  let characters = $state(null);
+  let ifs = $state(null);
 
-  let characters = null;
-  let ifs = null;
-
-  onMount(() => {
+  $effect(() => {
     const button = document.getElementById("submit");
     const textarea = document.getElementById("text");
 
-    button.addEventListener("click", () => {
+    function handleClick() {
       const text = textarea.value;
       characters = text.length;
       ifs = (text.match(/if/g) || []).length;
-    });
+    }
+
+    button.addEventListener("click", handleClick);
+
+    return () => {
+      button.removeEventListener("click", handleClick);
+    };
   });
 </script>
 

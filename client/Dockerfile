@@ -8,4 +8,4 @@ RUN DENO_FUTURE=1 deno install --allow-scripts
 
 COPY . .
 
-CMD [ "task", "dev", "--host" ]
+CMD [ "task", "dev" ]

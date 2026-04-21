@@ -6,4 +6,8 @@ export default defineConfig({
   output: "server",
   adapter: deno(),
   integrations: [svelte()],
+  server: {
+    host: true,
+    port: 4321,
+  },
 });
