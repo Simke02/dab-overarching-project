@@ -66,4 +66,33 @@ app.post("/api/exercises/:id/submissions", async (c) => {
   return c.json({ id: submission_id});
 })
 
+app.get("/api/exercises/:id", async (c) => {
+  const exercises = await sql`
+    SELECT id, title, description
+    FROM exercises
+    WHERE id = ${c.req.param("id")}
+  `;
+
+  if (exercises.length === 0) {
+    return c.body(null, 404);
+  }
+
+  return c.json(exercises[0]);
+});
+
+app.get("/api/submissions/:id/status", async (c) => {
+  const submissions = await sql`
+    SELECT grading_status, grade
+    FROM exercise_submissions
+    WHERE id = ${c.req.param("id")}
+  `;
+
+  if (submissions.length === 0) {
+    return c.body(null, 404);
+  }
+
+  c.header("Cache-Control", "no-store");
+  return c.json(submissions[0]);
+});
+
 export default app;
