@@ -2,6 +2,8 @@
 import Exercises from "../../components/Exercises.svelte";
 export const prerender = false;
 const { id } = Astro.params as { id: string };
+import UserInfo from "../components/UserInfo.svelte";
 ---
+<UserInfo client:visible />
 <h1>Available exercises</h1>
 <Exercises languageId={id} client:load />

@@ -45,12 +45,16 @@
   <p>{exercise.description}</p>
 {/if}
 
-<textarea id="text" bind:value={text}></textarea>
-<button id="submit" onclick={handleSubmit}>Submit</button>
+{#if !userState.email}
+  <textarea id="text" bind:value={text}></textarea>
+  <button id="submit" onclick={handleSubmit}>Submit</button>
 
-{#if gradingStatus !== null}
-  <p>Grading status: {gradingStatus}</p>
-{/if}
-{#if grade !== null}
-  <p>Grade: {grade}</p>
+  {#if gradingStatus !== null}
+    <p>Grading status: {gradingStatus}</p>
+  {/if}
+  {#if grade !== null}
+    <p>Grade: {grade}</p>
+  {/if}
+{:else}
+  <p>Login or register to complete exercises.</p>
 {/if}

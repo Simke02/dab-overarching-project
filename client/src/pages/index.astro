@@ -1,5 +1,7 @@
 ---
 import Languages from "../components/Languages.svelte";
+import UserInfo from "../components/UserInfo.svelte";
 ---
+<UserInfo client:visible />
 <h1>Available languages</h1>
 <Languages client:load />
