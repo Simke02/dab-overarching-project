@@ -1,5 +1,5 @@
 <script>
-  import { useUserState } from "../../states/userState.svelte.js";
+  import { useUserState } from "../states/userState.svelte.js";
   const userState = useUserState();
 </script>
 

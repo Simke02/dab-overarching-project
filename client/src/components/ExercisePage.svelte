@@ -1,4 +1,7 @@
 <script>
+  import { useUserState } from "../states/userState.svelte.js";
+  let userState = useUserState();
+
   let { exerciseId } = $props();
 
   let exercise = $state(null);
@@ -45,7 +48,7 @@
   <p>{exercise.description}</p>
 {/if}
 
-{#if !userState.email}
+{#if userState.email}
   <textarea id="text" bind:value={text}></textarea>
   <button id="submit" onclick={handleSubmit}>Submit</button>
 
