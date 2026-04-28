@@ -64,6 +64,8 @@ services:
       postgres
       -c shared_preload_libraries=auto_explain,pg_stat_statements
       -c auto_explain.log_min_duration=10
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
   
   redis:
     image: redis:7.4.2
@@ -82,3 +84,11 @@ services:
       - "8000:8000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  
+  lgtm:
+    image: grafana/otel-lgtm:0.8.6
+    ports:
+      - "3000:3000"
+      - "4318:4318"
+    volumes:
+      - ./lgtm-data:/data
