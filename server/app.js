@@ -32,6 +32,7 @@ app.use("*", async (c, next) => {
   }
 
   c.set("user", session.user.name);
+  c.set("user_id", session.user.id);
   return next();
 });
 
@@ -78,10 +79,11 @@ app.use("/api/exercises/:id/submissions", async (c, next) => {
 });
 
 app.post("/api/exercises/:id/submissions", async (c) => {
+  const user_id = c.get("user_id");
   const { source_code } = await c.req.json()
   const result = await sql`
-    INSERT INTO exercise_submissions (exercise_id, source_code)
-    VALUES (${c.req.param("id")}, ${source_code})
+    INSERT INTO exercise_submissions (exercise_id, source_code, user_id)
+    VALUES (${c.req.param("id")}, ${source_code}, ${user_id})
     RETURNING id
   `;
   const submission_id = result[0].id;
@@ -114,8 +116,9 @@ app.use("/api/submissions/:id/status", async (c, next) => {
 });
 
 app.get("/api/submissions/:id/status", async (c) => {
+  const user_id = c.get("user_id");
   const submissions = await sql`
-    SELECT grading_status, grade
+    SELECT grading_status, grade, user_id
     FROM exercise_submissions
     WHERE id = ${c.req.param("id")}
   `;
@@ -124,8 +127,15 @@ app.get("/api/submissions/:id/status", async (c) => {
     return c.body(null, 404);
   }
 
+  if(submissions[0].user_id != user_id) {
+    c.status(404);
+    return c.json({ message: "Unauthorized" });
+  }
+
+  const { user_id: _, ...response } = submissions[0];
+
   c.header("Cache-Control", "no-store");
-  return c.json(submissions[0]);
+  return c.json(response);
 });
 
 export default app;

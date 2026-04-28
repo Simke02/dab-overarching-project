@@ -3,6 +3,7 @@ import { cors } from "@hono/hono/cors";
 import { logger } from "@hono/hono/logger";
 import { Redis } from "ioredis";
 import postgres from "postgres";
+import { levenshteinDistance } from "./grader-utils.js";
 
 const app = new Hono();
 const sql = postgres();
@@ -52,7 +53,29 @@ async function startGradingLoop() {
             const grading_period = getRandomInt(1,3) * 1000;
             await sleep(grading_period);
 
-            const grade = getRandomInt(0,100);
+            const submissionRows = await sql`
+                SELECT source_code, exercise_id
+                FROM exercise_submissions
+                WHERE id = ${id}
+            `;
+            const submissionCode = submissionRows[0].source_code;
+            const exerciseId = submissionRows[0].exercise_id;
+
+            const exerciseRows = await sql`
+                SELECT solution_code
+                FROM exercises
+                WHERE id = ${exerciseId}
+            `;
+            const solutionCode = exerciseRows[0].solution_code;
+
+            const distance = levenshteinDistance(submissionCode, solutionCode);
+            const maxLen = Math.max(submissionCode.length, solutionCode.length);
+            let grade;
+            if (maxLen === 0) {
+                grade = 100;
+            } else {
+                grade = Math.ceil(100 * (1 - (distance / maxLen)));
+            }
             await sql`
                 UPDATE exercise_submissions
                 SET grading_status = 'graded',
