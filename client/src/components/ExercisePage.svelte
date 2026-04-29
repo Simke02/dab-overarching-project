@@ -8,6 +8,9 @@
   let text = $state("");
   let gradingStatus = $state(null);
   let grade = $state(null);
+  let prediction = $state(null);
+
+  let typingTimer = null;
 
   $effect(() => {
     fetch(`/api/exercises/${exerciseId}`)
@@ -16,6 +19,31 @@
         exercise = data;
       });
   });
+
+  async function fetchPrediction() {
+    const response = await fetch("/inference-api/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        exercise: exercise.id,
+        code: text
+      })
+    });
+    const data = await response.json();
+    prediction = Math.round(data.prediction);
+  }
+
+  function handleInput() {
+    prediction = null;
+    if (typingTimer) {
+      clearTimeout(typingTimer);
+    }
+    typingTimer = setTimeout(() => {
+      fetchPrediction();
+    }, 500);
+  }
 
   async function handleSubmit() {
     gradingStatus = null;
@@ -49,8 +77,12 @@
 {/if}
 
 {#if userState.email}
-  <textarea id="text" bind:value={text}></textarea>
+  <textarea id="text" bind:value={text} oninput={handleInput}></textarea>
   <button id="submit" onclick={handleSubmit}>Submit</button>
+
+  {#if prediction !== null}
+    <p>Correctness estimate: {prediction}%</p>
+  {/if}
 
   {#if gradingStatus !== null}
     <p>Grading status: {gradingStatus}</p>
